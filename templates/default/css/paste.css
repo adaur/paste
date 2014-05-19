@@ -1,0 +1,14 @@
+.dropdown-menu > .active > a, 
+.dropdown-menu > .active > a:hover, 
+.dropdown-menu > .active > a:focus,
+.navbar-inverse .nav .dropdown-menu .active > a,
+.navbar-inverse .nav .dropdown-menu .active > a:hover, 
+.navbar-inverse .nav .dropdown-menu .active > a:focus {
+	background-color:#FFFFFF;
+}
+
+textarea{ 
+  width: 96.9%; 
+  height:350px; 
+  resize: none;
+}
