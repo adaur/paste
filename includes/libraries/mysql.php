@@ -128,6 +128,20 @@ class DB extends PDO
 		else
 			return false;
     }
+	
+    // Return trending pastes
+    public function getTrends()
+    {
+    	$posts=array();
+		$qid = $this->prepare("SELECT pid,title,code,unix_timestamp()-unix_timestamp(posted) AS age, date_format(posted, '%a %D %b %H:%i') AS postdate FROM paste ORDER BY hits DESC LIMIT 10");
+		$qid->execute(array());
+		while( $row=$qid->fetch(PDO::FETCH_ASSOC) )
+			$posts[]=$row;
+    	if ($posts)
+			return $posts;
+		else
+			return false;
+    }
     
     // Return summaries for $count posts ($count=0 means all)
     public function getRecentPostSummary($count)

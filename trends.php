@@ -36,30 +36,11 @@ $page['remember']='';
 // Add list of recent posts.
 $page['recent']=$pastebin->getRecentPosts($CONF['recentposts']);
 
-// Show a post.
-if (isset($_REQUEST["paste"]))
-{
-	$pid=intval($_REQUEST['paste']);
-	// Get the post.
-	$page['post']=$pastebin->getPaste($pid);
-	// Ensure corrent format is selected.
-	$page['current_format']=$page['post']['format'];
-	$page['title']=$page['post']['title'] .' - '. $CONF['sitetitle'];
-}
-elseif (isset($_REQUEST["search"]))
-{
-	$keywords=$_REQUEST['search'];
-	// Get the search.
-	$page['search']=$pastebin->getSearch($keywords);
-	$page['title']=$CONF['sitetitle'];
-}
-else
-{
-	$page['posttitle']=$lang['New posting'];
-	$page['title']=$CONF['sitetitle'];
-}
+// Display most populars pastes, based on hits
+$page['trends']=$pastebin->getTrends();
+$page['title']=$lang['Trending'].' - '.$CONF['sitetitle'];
 
 // HTML page output.
 include('templates/'.$CONF['template'].'/header.php');
-include('templates/'.$CONF['template'].'/main.php');
+include('templates/'.$CONF['template'].'/trends.php');
 include('templates/'.$CONF['template'].'/footer.php');

@@ -21,7 +21,7 @@ function showMe() {
 	global $CONF;
 	global $lang;
 	
-	if (strlen($page['post']['posttitle'])) { echo '<div class="alert alert-light">' . $page['post']['posttitle'] . ' - '.$lang['Format'].': ' . htmlspecialchars($page['post']['format']);
+	if (strlen($page['post']['posttitle'])) { echo '<div class="alert alert-light">' . $page['post']['posttitle'] . ' - '.$lang['Format'].': ' . htmlspecialchars($page['post']['format']) . ' - '.$lang['Views'].': ' . round($page['post']['hits']/2);
 	
 		if ($page['post']['parent_pid']>0) {
 			echo ' - '.$lang['Modified'].' -  <a href="' . $page['post']['parent_url'] . '" title="'.$lang['View original post'].'">' . htmlspecialchars($page['post']['parent_title']) . '</a>".';
@@ -136,7 +136,7 @@ if (isset($keywords)) {
 					<p class="no-margin"><i class="icon-code"></i>
 					<?php if ( $mod_rewrite == true ) { 
 					echo '<a href="'. $CONF['url'] . $entry['pid'] . '">' . $entry['title'] . '</a>'; } else { 
-					echo '<a href="'. $CONF['url'] .'?paste='. $entry['pid'].'">' . $entry['title'] . '</a>'; } ?>
+					echo '<a href="'. $CONF['url'] .'paste.php?paste='. $entry['pid'].'">' . $entry['title'] . '</a>'; } ?>
 					</p>
 				</div>
 			<?php } ?>
@@ -151,7 +151,7 @@ if (!isset($keywords) && !(isset($pass) && (sha1($postPass) !== $pass)) || (isse
 <!-- Paste area -->
 <div class="row-fluid">
 	<div class="span8">
-	<form name="editor" method="post" action="index.php">
+	<form name="editor" method="post" action="paste.php">
 	<input type="hidden" name="parent_pid" value="<?php if(isset($page['post']['pid'])){echo $page['post']['pid'];} ?>"/>
 		<div class="top-bar"><h3><i class="icon-edit"></i> <?php echo $lang['New Paste'] ?></h3></div>
 		<div class="well">
@@ -248,25 +248,6 @@ if (!isset($keywords) && !(isset($pass) && (sha1($postPass) !== $pass)) || (isse
 	</form>   
 	</div>
 </div>
-	<!-- Recent Pastes -->
-	<div class="span4">
-		<div class="top-bar"><h3><i class="icon-pencil"></i> <?php echo $lang['Recent Pastes'] ?></h3></div>
-			<div class="well no-padding" id="pagination-activity">
-				<div class="list-widget pagination-content">
-				<?php foreach($page['recent'] as $idx=>$entry) {
-					if (isset($pid) && $entry['pid']==$pid) $cls="background-color: #e0e0e0;";
-					else $cls="";?>
-				<div class="item" style="display: block; <?php echo $cls;?>">
-					<small class="pull-right"><?php echo $entry['agefmt'];?></small>
-					<p class="no-margin"><i class="icon-code"></i>
-					<?php if ( $mod_rewrite == true ) { 
-					echo '<a href="'. $CONF['url'] . $entry['pid'] . '">' . $entry['title'] . '</a>'; } else { 
-					echo '<a href="'. $CONF['url'] .'?paste='. $entry['pid'].'">' . $entry['title'] . '</a>'; } ?>
-					</p>
-				</div>
-			<?php } ?>
-			</div>
-		</div>
-	</div>
+<?php include('recent.php'); ?>
 </div> 
 <?php } ?>

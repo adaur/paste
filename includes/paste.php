@@ -281,7 +281,7 @@ class Pastebin
 		{
 			// Show a quick reference url, title and parents.        
 			$expires = ((is_null($post['expires'])) ? " (".$lang['Never Expires'].") " : (" - ".$lang['Expires on']." " . date("D, F jS @ g:ia", strtotime($post['expires']))));
-			$post['posttitle']="<b>{$post['title']}</b> - ".$lang['Posted on']." {$post['postdate']} {$expires}";
+			$post['posttitle']="<b>".htmlspecialchars($post['title'])."</b> - ".$lang['Posted on']." {$post['postdate']} {$expires}";
 			
 			if ($post['parent_pid']>0)
 			{
@@ -306,9 +306,9 @@ class Pastebin
 			}
 			
          if ($post['password'] != 'EMPTY')
-            $post['downloadurl']=$this->conf['url']."?dl=$pid&pass=". $post['password'];
+            $post['downloadurl']=$this->conf['url']."paste.php??dl=$pid&pass=". $post['password'];
          else
-            $post['downloadurl']=$this->conf['url']."?dl=$pid";
+            $post['downloadurl']=$this->conf['url']."paste.php?dl=$pid";
 			
 			// Store the code for later editing
 			$post['editcode']=$post['code'];
@@ -360,6 +360,7 @@ class Pastebin
 			}
 			$post['pid']=$pid;
 			
+			// Should be better placed (currently +2 every time a paste is displayed)
 			$this->db->addHit($pid);
 		}
 		else {
@@ -398,6 +399,38 @@ class Pastebin
 		}
 		
 		return $search;
+	}
+	
+	// Returns result of the search
+	function getTrends()
+	{
+		global $CONF;
+		global $lang;
+		
+		$trends=$this->db->getTrends();
+		
+		foreach($trends as $idx=>$post)
+		{
+			$age=$post['age'];
+			$days=floor($age/(3600*24));
+			$hours=floor($age/3600);
+			$minutes=floor($age/60);
+			$seconds=$age;
+			
+			if ($days>1)
+				$age=sprintf($lang['days ago'], $days);
+			elseif ($hours>0)
+				$age=sprintf((($hours>1)?$lang['hours ago']:$lang['hour ago']), $hours);
+			elseif ($minutes>0)
+				$age=sprintf((($minutes>1)?$lang['minutes ago']:$lang['minute ago']), $minutes);
+			else
+				$age=sprintf((($seconds>1)?$lang['secondes ago']:$lang['seconde ago']), $seconds);
+							
+			$trends[$idx]['agefmt']=$age;
+											
+		}
+		
+		return $trends;
 	}
 	
 }

@@ -317,4 +317,20 @@ Don't forget to change 11 (the length of the default prefix) to the new length o
 
 $CONF['diff_url']='';
 // END OF CONFIGURATION FILE
-?>
+
+// Magic quotes are anything but magic - lose them!
+if (get_magic_quotes_gpc())
+{
+	function callback_stripslashes(&$val, $name) 
+	{
+		if (get_magic_quotes_gpc()) 
+			$val=stripslashes($val);
+	}
+
+	if (count($_GET))
+		array_walk ($_GET, 'callback_stripslashes');
+	if (count($_POST))
+		array_walk ($_POST, 'callback_stripslashes');
+	if (count($_COOKIE))
+		array_walk ($_COOKIE, 'callback_stripslashes');
+}

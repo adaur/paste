@@ -25,6 +25,46 @@ $pastebin=new Pastebin($CONF);
 /// Clean up older posts 
 $pastebin->doGarbageCollection();
 
+// Process new posting
+$errors=array();
+if (isset($_POST['paste']))
+{	/* Process posting and redirect */
+	$id=$pastebin->doPost($_POST);
+	if ($id)
+	{
+		$pastebin->redirectToPost($id);
+		exit;
+	}
+}
+
+// Process downloads.
+if (isset($_GET['dl'])) 
+{
+  global $errors;
+   if (isset($_GET['pass']))
+      $getPass = $_GET['pass'];
+	$pid=intval($_GET['dl']);
+    $result = $pastebin->getPaste($pid);
+   
+   if ($result == FALSE) {
+      echo "Paste $pid is not available.";
+      exit;
+   }
+    $pass = $result['password'];
+
+   if ($pass == 'EMPTY') {
+      $pastebin->doDownload($pid);
+	  exit;
+   }
+   
+   else if ($pass != $getPass) {}
+   
+   else {
+      $pastebin->doDownload($pid);
+	  exit;
+   }
+}
+
 // If we get this far, we're going to be displaying some HTML, so let's kick off here.
 $page=array();
 
@@ -36,7 +76,7 @@ $page['remember']='';
 // Add list of recent posts.
 $page['recent']=$pastebin->getRecentPosts($CONF['recentposts']);
 
-// Show a post.
+// Show a post
 if (isset($_REQUEST["paste"]))
 {
 	$pid=intval($_REQUEST['paste']);
@@ -46,17 +86,10 @@ if (isset($_REQUEST["paste"]))
 	$page['current_format']=$page['post']['format'];
 	$page['title']=$page['post']['title'] .' - '. $CONF['sitetitle'];
 }
-elseif (isset($_REQUEST["search"]))
-{
-	$keywords=$_REQUEST['search'];
-	// Get the search.
-	$page['search']=$pastebin->getSearch($keywords);
-	$page['title']=$CONF['sitetitle'];
-}
 else
 {
-	$page['posttitle']=$lang['New posting'];
-	$page['title']=$CONF['sitetitle'];
+	header('Location:'.$CONF['url']);
+	exit;
 }
 
 // HTML page output.

@@ -46,6 +46,7 @@ $lang = array(
 'Posted on'				=>	'Posté le',
 'Unknown post'			=>	'ID inconnu, il a probablement expiré.',
 'Untitled'				=>	'Sans titre',
+'Views'					=>	'Vues',
 
 // Header
 'Anonymous'				=>	'Anonyme',
@@ -61,6 +62,7 @@ $lang = array(
 'Search'				=>	'Recherche',
 'Trending'				=>	'Populaires',
 'Public Archive'		=>	'Archive',
+'Save changes'			=>	'Sauvegarder',
 
 // Footer
 'Powered by'			=>	'Propulsé par',

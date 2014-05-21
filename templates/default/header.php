@@ -118,96 +118,6 @@
 
 </div> 
 
-<!-- PASTE will eventually include this feature ;)
-	<div id="messages" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="messages" aria-hidden="true">
-
-		<div class="modal-header">
-			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-			<h3 id="messages"><i class="icon-comment"></i> Messages</h3>
-		</div>
-
-		<div class="modal-body no-padding">
-		
-			<div class="list-widget">
-
-				<div class="item">
-					<small class="pull-right">date would be here</small>
-					<h3><i class="icon-user"></i> username</h3>
-					<p>thismessage</p>
-				</div>
-
-			</div>
-
-		</div>
-
-		<div class="modal-footer">
-
-			<a href="#newmessage" class="btn btn-primary" data-dismiss="modal" data-toggle="modal">New mesaage</a>
-			<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-
-		</div>
-
-	</div>
-	
-	<div id="newmessage" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="newmessages" aria-hidden="true">
-
-		<div class="modal-header">
-			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-			<h3 id="newmessages"><i class="icon-comment"></i> New Message</h3>
-		</div>
-
-		<div class="modal-body">
-			<div class="control-group">
-				<label class="control-label" for="inputName"> </label>
-				<div class="controls">
-					<input type="text" id="inputName" placeholder="Recipient">
-				</div>
-			</div>
-			
-			<div class="btn-toolbar" data-role="editor-toolbar" data-target="#editor">
-
-				<div class="btn-group">
-					<a class="btn dropdown-toggle" data-toggle="dropdown" title="Font"><i class="icon-font"></i><b class="caret"></b></a>
-					<ul class="dropdown-menu">
-					</ul>
-				</div>
-
-				<div class="btn-group">
-					<a class="btn dropdown-toggle" data-toggle="dropdown" title="Font Size"><i class="icon-text-height"></i>&nbsp;<b class="caret"></b></a>
-					<ul class="dropdown-menu">
-					<li><a data-edit="fontSize 5"><font size="5">Huge</font></a></li>
-					<li><a data-edit="fontSize 3"><font size="3">Normal</font></a></li>
-					<li><a data-edit="fontSize 1"><font size="1">Small</font></a></li>
-					</ul>
-				</div>
-
-				<div class="btn-group">
-					<a class="btn" data-edit="bold" title="Bold (Ctrl/Cmd+B)"><i class="icon-bold"></i></a>
-					<a class="btn" data-edit="italic" title="Italic (Ctrl/Cmd+I)"><i class="icon-italic"></i></a>
-					<a class="btn" data-edit="strikethrough" title="Strikethrough"><i class="icon-strikethrough"></i></a>
-					<a class="btn" data-edit="underline" title="Underline (Ctrl/Cmd+U)"><i class="icon-underline"></i></a>
-				</div>
-				
-				<div class="btn-group">
-					<a class="btn" title="Insert picture (or just drag & drop)" id="pictureBtn"><i class="icon-picture"></i></a>
-					<input type="file" data-role="magic-overlay" data-target="#pictureBtn" data-edit="insertImage" />
-				</div>
-
-			</div>
-
-			<div id="sendmessage"></div>
-
-		</div>
-		<div class="modal-footer">
-
-			<button class="btn btn-primary">Send Message</button>
-			<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-
-		</div>
-
-	</div>
-	// -->
-
 <div class="container">
 	<div class="navbar navbar-inverse" id="nav">
 		<div class="navbar-inner">
@@ -215,22 +125,10 @@
 				<li><a href="<?php echo $CONF['url'];?>"><i class="icon-paste"></i> <?php echo $lang['Submit'] ?></a></li>
 				<li><?php if ( $mod_rewrite == true ) { echo '<a href="'. $CONF['url'] .'search">'; } else { echo '<a href="'. $CONF['url'] .'search.php">'; } ?><i class="icon-search"></i> <?php echo $lang['Search'] ?></a></li>
 				<li><?php if ( $mod_rewrite == true ) { echo '<a href="'. $CONF['url'] .'trending">'; } else { echo '<a href="'. $CONF['url'] .'trends.php">'; } ?><i class="icon-bar-chart"></i> <?php echo $lang['Trending'] ?></a></li>
-				<li><?php if ( $mod_rewrite == true ) { echo '<a href="'. $CONF['url'] .'archive">'; } else { echo '<a href="'. $CONF['url'] .'archive.php">'; } ?><i class="icon-archive"></i> <?php echo $lang['Public Archive'] ?></a></li>
-				<!-- who knows what we'll add here, docs? faq?
-				<li class="dropdown">
-					<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-blah"></i> FAQ <b class="caret"></b></a>
-						<ul class="dropdown-menu">
-							<li><a href="#"><i class="icon-blah"></i> Nothing to see here</a></li>
-						</ul>
-				</li> // -->
-
-				<!-- we plan on adding image pastes too
-				<li><a href="#"><i class="icon-picture"></i> Images</a></li>//-->
-
 			</ul>
 			
-			<form class="navbar-search pull-right" method="get">
-				<input type="text" class="search-query typeahead" name="search" placeholder="Search">
+			<form class="navbar-search pull-right" action="search.php" method="get">
+				<input type="text" class="search-query typeahead" name="search" placeholder="<?php echo $lang['Search'] ?>"">
 			</form>
 		</div>
 
