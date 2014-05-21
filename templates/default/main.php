@@ -2,7 +2,7 @@
 // Show errors
 if (count($pastebin->errors)) { 
 	echo '<div class="alert alert-error">';
-	foreach($pastebin->errors as $err) { echo '<i class="icon-exclamation-sign"></i> ' . $err . ' </div>'; }
+	foreach($pastebin->errors as $err) { echo '<i class="icon-exclamation-sign"></i> ' . htmlspecialchars($err) . ' </div>'; }
 $page['post']['editcode']=$_POST['code2'];
 $page['current_format']=$_POST['format'];
 $page['expiry']=$_POST['expiry'];
@@ -19,20 +19,21 @@ function showMe() {
 	global $post;
 	global $followups;
 	global $CONF;
+	global $lang;
 	
-	if (strlen($page['post']['posttitle'])) { echo '<div class="alert alert-light">' . $page['post']['posttitle'] . ' - Format: ' . ($page['post']['format']) . '';
+	if (strlen($page['post']['posttitle'])) { echo '<div class="alert alert-light">' . $page['post']['posttitle'] . ' - '.$lang['Format'].': ' . htmlspecialchars($page['post']['format']);
 	
 		if ($page['post']['parent_pid']>0) {
-			echo ' - This is a modified post titled "<a href="' . $page['post']['parent_url'] . '" title="View original post">' . $page['post']['parent_title'] . '</a>".';
+			echo ' - '.$lang['Modified'].' -  <a href="' . $page['post']['parent_url'] . '" title="'.$lang['View original post'].'">' . htmlspecialchars($page['post']['parent_title']) . '</a>".';
 		}
 
 		$followups=count($page['post']['followups']);
 		if ($followups) { 
-			echo ' - See newer version(s) of this paste titled ';
+			echo ' - '.$lang['Newer'];
 			$sep="";
 			foreach($page['post']['followups'] as $idx=>$followup) {
-				echo $sep . '<a title="Posted on ' . $followup['postfmt'] . '" href="' . $followup['followup_url'] . '">"' . $followup['title'] . '"</a>';
-				$sep=($idx<($followups-2))?", ":" and ";
+				echo $sep . '<a title="'.$lang['Posted on'].' ' . htmlspecialchars($followup['postfmt']) . '" href="' . $followup['followup_url'] . '">"' . htmlspecialchars($followup['title']) . '"</a>';
+				$sep=($idx<($followups-2))?", ":" ".$lang['and']." ";
 				}
 			}
 ?>
@@ -43,14 +44,14 @@ function showMe() {
 	<div class="span12">
 			<div class="alert alert-success span12" id="copied" style="display:none;">
 			<i class="icon-paste"></i>
-			The text below is selected, press Ctrl+C to copy to your clipboard. (&#8984;+C on Mac) No line numbers will be copied.
+			<?php echo $lang['Info text selected'] ?>
 			</div>
 		<div class="top-bar">
 			<ul class="tab-container">
-				<li><a href="<?php echo $CONF['url'] ?>"><i class="icon-code"></i> New paste</a></li>
-				<li><a href="<?php echo $page['post']['downloadurl'] ?>"><i class="icon-download"></i> Download</a></li>
+				<li><a href="<?php echo $CONF['url'] ?>"><i class="icon-code"></i> <?php echo $lang['New Paste'] ?></a></li>
+				<li><a href="<?php echo $page['post']['downloadurl'] ?>"><i class="icon-download"></i> <?php echo $lang['Download'] ?></a></li>
 				<li><a href="javascript:togglev();" title="Show/Hide line numbers"><i class="icon-list-ul"></i></a></li>
-				<li><a href="#" class="copyme" onclick="selectText('code');showdiv('copied');" title="Copy text to clipboard"><i class="icon-copy"></i></a></li>
+				<li><a href="#" class="copyme" onclick="selectText('code');showdiv('copied');" title="<?php echo $lang['Copy text'] ?>"><i class="icon-copy"></i></a></li>
 			</ul>
 		</div>
 <?php } // End post title
@@ -91,14 +92,14 @@ if (isset($pass) && ($pass != "EMPTY")) { if (!isset($postPass)) { ?>
 	<div class="span5">
 		<form class="form-horizontal" method="post" action="">
 			<div class="top-bar">
-				<h3><i class="icon-warning-sign"></i> This paste is password protected.</b></h3>
+				<h3><i class="icon-warning-sign"></i> <?php echo $lang['Password protected'] ?></b></h3>
 			</div>
 			<div class="well no-padding">						
 				<div class="control-group">
 						<label class="control-label" for="password"><i class="icon-key"></i></label>
 					<div class="controls">
-						<input type="password" name="password" placeholder="Password">
-						<button class="btn btn-primary" type="submit">Show</button>
+						<input type="password" name="password" placeholder="<?php echo $lang['Password'] ?>">
+						<button class="btn btn-primary" type="submit"><?php echo $lang['Show'] ?></button>
 					</div>
 				</div>
 			</div>
@@ -111,22 +112,48 @@ if (isset($pass) && ($pass != "EMPTY")) { if (!isset($postPass)) { ?>
 <div class="row-fluid">
   <div class="span5">
 	<div class="alert alert-error">
-		<i class="icon icon-warning-sign"></i> The password you entered was incorrect, <a href="#tryagain" onClick="history.go(-1); return false;">Try again.</a></i>
+		<i class="icon icon-warning-sign"></i> <?php echo $lang['Password incorrect'] ?> <a href="#tryagain" onClick="history.go(-1); return false;"><?php echo $lang['Try again'] ?></a></i>
 	</div>
   </div>
 </div>
 
 <?php }
 	} else { showMe(); }
-}; // End password page
+}; // End showing paste
 
-if (!(isset($pass) && (sha1($postPass) !== $pass)) || $pass == "EMPTY") {?>
+if (isset($keywords)) {
+	global $keywords;
+?>
+	<div class="span4">
+		<div class="top-bar"><h3><i class="icon-pencil"></i> <?php echo $lang['Recent Pastes'] ?></h3></div>
+			<div class="well no-padding" id="pagination-activity">
+				<div class="list-widget pagination-content">
+				<?php foreach($page['search'] as $idx=>$entry) {
+					if (isset($pid) && $entry['pid']==$pid) $cls="background-color: #e0e0e0;";
+					else $cls="";?>
+				<div class="item" style="display: block; <?php echo $cls;?>">
+					<small class="pull-right"><?php echo $entry['agefmt'];?></small>
+					<p class="no-margin"><i class="icon-code"></i>
+					<?php if ( $mod_rewrite == true ) { 
+					echo '<a href="'. $CONF['url'] . $entry['pid'] . '">' . $entry['title'] . '</a>'; } else { 
+					echo '<a href="'. $CONF['url'] .'?paste='. $entry['pid'].'">' . $entry['title'] . '</a>'; } ?>
+					</p>
+				</div>
+			<?php } ?>
+			</div>
+		</div>
+	</div>
+
+<?php
+}; // End showing paste
+
+if (!isset($keywords) && !(isset($pass) && (sha1($postPass) !== $pass)) || (isset($pass) && $pass == "EMPTY")) {?>
 <!-- Paste area -->
 <div class="row-fluid">
 	<div class="span8">
 	<form name="editor" method="post" action="index.php">
 	<input type="hidden" name="parent_pid" value="<?php if(isset($page['post']['pid'])){echo $page['post']['pid'];} ?>"/>
-		<div class="top-bar"><h3><i class="icon-edit"></i> New Paste</h3></div>
+		<div class="top-bar"><h3><i class="icon-edit"></i> <?php echo $lang['New Paste'] ?></h3></div>
 		<div class="well">
 			<div class="btn-toolbar">
 				<div class="btn-group" style="margin-top: -5px;">
@@ -156,7 +183,7 @@ if (!(isset($pass) && (sha1($postPass) !== $pass)) || $pass == "EMPTY") {?>
 				</div>
 
 				<div class="btn-group">
-					<a class="btn" onclick="highlight(document.getElementById('code')); return false;"><i class="icon-pencil"></i>Highlight Selection</a>
+					<a class="btn" onclick="highlight(document.getElementById('code')); return false;"><i class="icon-pencil"></i><?php echo $lang['Highlight Selection'] ?></a>
 				</div>
 			</div>
 			
@@ -168,10 +195,10 @@ if (!(isset($pass) && (sha1($postPass) !== $pass)) || $pass == "EMPTY") {?>
 		</div>
 
 	<!-- Options -->
-	<div class="top-bar"><h3><i class="icon-gear"></i> Paste Options</h3></div>
+	<div class="top-bar"><h3><i class="icon-gear"></i> <?php echo $lang['Paste Options'] ?></h3></div>
 	<div class="well no-padding">
 		<div class="control-group">
-			<label class="control-label">Paste Title</label>
+			<label class="control-label"><?php echo $lang['Paste Title'] ?></label>
 			<div class="controls">
 				<div class="input-icon left">
 					<i class="icon-edit"></i>
@@ -184,7 +211,7 @@ if (!(isset($pass) && (sha1($postPass) !== $pass)) || $pass == "EMPTY") {?>
 		</div>
 
 		<div class="control-group">
-			<label class="control-label">Password</label>
+			<label class="control-label"><?php echo $lang['Password'] ?></label>
 			<div class="controls">
 				<div class="input-icon left">
 					<i class="icon-lock"></i>
@@ -194,14 +221,14 @@ if (!(isset($pass) && (sha1($postPass) !== $pass)) || $pass == "EMPTY") {?>
 		</div>
 		
 		<div class="control-group">
-			<label class="control-label">Paste Expiration</label>
+			<label class="control-label"><?php echo $lang['Paste Expiration'] ?></label>
 			<div class="controls">
 			<div class="input-icon left">
 				<i class="icon-trash"></i>
 				<select class="span3 m-wrap" name="expiry" tabindex="1">
-					<option id="expiry_forever" value="f" <?php if ($page['expiry']=='f') echo 'selected="selected"'; ?>>None</option>
-					<option id="expiry_day" value="d" <?php if ($page['expiry']=='d') echo 'selected="selected"'; ?>>One Day</option>
-					<option id="expiry_month" value="m" <?php if ($page['expiry']=='m') echo 'selected="selected"'; ?>>One Month</option>
+					<option id="expiry_forever" value="f" <?php if ($page['expiry']=='f') echo 'selected="selected"'; ?>><?php echo $lang['None'] ?></option>
+					<option id="expiry_day" value="d" <?php if ($page['expiry']=='d') echo 'selected="selected"'; ?>><?php echo $lang['One Day'] ?></option>
+					<option id="expiry_month" value="m" <?php if ($page['expiry']=='m') echo 'selected="selected"'; ?>><?php echo $lang['One Month'] ?></option>
 				</select>
 			</div>
 			</div>
@@ -209,21 +236,21 @@ if (!(isset($pass) && (sha1($postPass) !== $pass)) || $pass == "EMPTY") {?>
 
 			<div class="form-actions">
 			<?php if ($CONF['useRecaptcha']) { require_once('includes/libraries/recaptchalib.php'); ?>
-				<p>Please input the image below to prove you're not a spambot.
+				<p><?php echo $lang['Info ReCaptcha'] ?>
 				<!-- reCAPTCHA -->
 				<!-- Quick hack to maintain responsiveness -->
-				<script src="http://korylprince.github.io/reCAPTCHA_Responsive/recaptcha_mobile.min.js"></script>
+				<script src="includes/recaptcha_mobile.min.js"></script>
 				<script> var RecaptchaOptions = { theme : 'clean' }; </script>
 				<?php echo recaptcha_get_html($CONF['pubkey'])."\n"; ?><br />
 				<?php } ?>
-				<button class="btn" type="submit" name="paste"><i class="icon-arrow-right"></i> Submit</button></p>
+				<button class="btn" type="submit" name="paste"><i class="icon-arrow-right"></i> <?php echo $lang['Submit'] ?></button></p>
 			</div>
 	</form>   
 	</div>
 </div>
 	<!-- Recent Pastes -->
 	<div class="span4">
-		<div class="top-bar"><h3><i class="icon-pencil"></i> Recent Pastes</h3></div>
+		<div class="top-bar"><h3><i class="icon-pencil"></i> <?php echo $lang['Recent Pastes'] ?></h3></div>
 			<div class="well no-padding" id="pagination-activity">
 				<div class="list-widget pagination-content">
 				<?php foreach($page['recent'] as $idx=>$entry) {

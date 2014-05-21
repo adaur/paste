@@ -18,6 +18,12 @@ $CONF=array();
 // Include the configration file
 require_once('config.php');
 
+// Load the language file, fallback to english if necessary
+if (file_exists('includes/lang/'.$CONF['language'].'.php'))
+    require 'includes/lang/'.$CONF['language'].'.php';
+else
+    require 'lang/english.php';
+
 // Pull in the required database class.
 switch($CONF['dbsoftware']){
     case "postgresql":

@@ -28,7 +28,6 @@ if (get_magic_quotes_gpc())
 			$val=stripslashes($val);
 	}
 
-
 	if (count($_GET))
 		array_walk ($_GET, 'callback_stripslashes');
 	if (count($_POST))
@@ -92,8 +91,7 @@ $page['expiry']=$CONF['default_expiry'];
 $page['remember']='';
 
 // Add list of recent posts.
-$list=isset($_REQUEST["list"]) ? intval($_REQUEST["list"]) : 10;
-$page['recent']=$pastebin->getRecentPosts($list);
+$page['recent']=$pastebin->getRecentPosts($CONF['recentposts']);
 
 // Show a post.
 if (isset($_REQUEST["paste"]))
@@ -103,19 +101,18 @@ if (isset($_REQUEST["paste"]))
 	$page['post']=$pastebin->getPaste($pid);
 	// Ensure corrent format is selected.
 	$page['current_format']=$page['post']['format'];
+	$page['title']=$page['post']['title'] .' - '. $CONF['sitetitle'];
+}
+elseif (isset($_REQUEST["search"]))
+{
+	$keywords=$_REQUEST['search'];
+	// Get the search.
+	$page['search']=$pastebin->getSearch($keywords);
+	$page['title']=$CONF['sitetitle'];
 }
 else
 {
-	$page['posttitle']='New posting';
-}
-
-if ($page['current_format']!='text')
-{
-	// Give the page a title which features the syntax used.
-	$page['title']=$CONF['geshiformats'][$page['current_format']] . " - ".$CONF['sitetitle'];
-}
-else
-{
+	$page['posttitle']=$lang['New posting'];
 	$page['title']=$CONF['sitetitle'];
 }
 

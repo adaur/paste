@@ -32,8 +32,7 @@ class Pastebin
 	// Has a 5% probability of cleaning old posts from the database
 	function doGarbageCollection()
 	{
-		if(rand()%100 < 5)
-		{
+		
 			// Is there a limit on the number of posts?
 			if ($this->conf['max_posts'])
 			{
@@ -47,7 +46,6 @@ class Pastebin
 			// Delete expired posts
 			$this->db->deleteExpiredPastes();
 		}
-	}
 	
 	// Private method for validating a user-submitted username
 	function _cleanUsername($name)
@@ -93,17 +91,18 @@ class Pastebin
 	}
 	
 	// Returns paste ID if successful.
-	
 	function doPost(&$post)
 	{
 		$id=0;
+		global $CONF;
+		global $lang;
       
       // reCAPTCHA.
       if ($this->conf['useRecaptcha']) {
          $resp = recaptcha_check_answer($this->conf['privkey'], $_SERVER["REMOTE_ADDR"], $_POST["recaptcha_challenge_field"], $_POST["recaptcha_response_field"]);
       
          if (!$resp->is_valid) {
-            $this->errors[] = "The CAPTCHA you entered was incorrect. If you have trouble with the image you can refresh it, or simply use the speaker icon to hear it.";
+            $this->errors[] = $lang['Error ReCaptcha'];
             return $id;
          }
       }
@@ -134,7 +133,7 @@ class Pastebin
 			$title=preg_replace('/[^A-Za-z0-9_ \-]/', '',$post['title']);
 			$title=$post['title'];
 			if (strlen($title)==0)
-				$title='Untitled';
+				$title=$lang['Untitled'];
 			
 			$format=$post['format'];
 			if (!array_key_exists($format, $this->conf['geshiformats']))
@@ -157,7 +156,7 @@ class Pastebin
 			$id=$this->db->addPost($title,$format,$code,$parent_pid,$post["expiry"],$password);
 		}
 		else {
-			$this->errors[]="Please specify a paste to submit.";
+			$this->errors[]=$lang['Error Paste'];
 		}
 		return $id;
 	}	
@@ -240,6 +239,9 @@ class Pastebin
 	// Returns array of post summaries, each element has: url, title, age. parameter is a count or 0 for all
 	function getRecentPosts($list=10)
 	{
+		global $CONF;
+		global $lang;
+		
 		// Get raw db info.
 		$posts=$this->db->getRecentPostSummary($list);
 		
@@ -253,13 +255,13 @@ class Pastebin
 			$seconds=$age;
 			
 			if ($days>1)
-				$age="$days days ago";
+				$age=sprintf($lang['days ago'], $days);
 			elseif ($hours>0)
-				$age="$hours hour".(($hours>1)?"s":"")." ago";
+				$age=sprintf((($hours>1)?$lang['hours ago']:$lang['hour ago']), $hours);
 			elseif ($minutes>0)
-				$age="$minutes minute".(($minutes>1)?"s":"")." ago";
+				$age=sprintf((($minutes>1)?$lang['minutes ago']:$lang['minute ago']), $minutes);
 			else
-				$age="$seconds second".(($seconds>1)?"s":"")." ago";
+				$age=sprintf((($seconds>1)?$lang['secondes ago']:$lang['seconde ago']), $seconds);
 							
 			$posts[$idx]['agefmt']=$age;
 											
@@ -271,12 +273,15 @@ class Pastebin
 	// Get formatted post, ready for inserting into a page. Returns an array of useful information
 	function getPaste($pid)
 	{
+		global $CONF;
+		global $lang;
+		
 		$post=$this->db->getPaste($pid);
 		if ($post)
 		{
 			// Show a quick reference url, title and parents.        
-         $expires = ((is_null($post['expires'])) ? " (Never Expires) " : (" - Expires on " . date("D, F jS @ g:ia", strtotime($post['expires']))));
-			$post['posttitle']="<b>{$post['title']}</b> - Posted on {$post['postdate']} {$expires}";
+			$expires = ((is_null($post['expires'])) ? " (".$lang['Never Expires'].") " : (" - ".$lang['Expires on']." " . date("D, F jS @ g:ia", strtotime($post['expires']))));
+			$post['posttitle']="<b>{$post['title']}</b> - ".$lang['Posted on']." {$post['postdate']} {$expires}";
 			
 			if ($post['parent_pid']>0)
 			{
@@ -354,11 +359,45 @@ class Pastebin
 				$this->db->saveFormatting($pid, $post['codefmt'], $post['codecss']);
 			}
 			$post['pid']=$pid;
+			
+			$this->db->addHit($pid);
 		}
 		else {
-			$post['codefmt']="<b>Unknown post ID, it probably expired.</b><br />";
+			$post['codefmt']="<b>".$lang['Unknown post']."</b><br />";
 		}
 		return $post;
+	}
+	
+	// Returns result of the search
+	function getSearch($keywords)
+	{
+		global $CONF;
+		global $lang;
+		
+		$search=$this->db->getSearch($keywords);
+		
+		foreach($search as $idx=>$post)
+		{
+			$age=$post['age'];
+			$days=floor($age/(3600*24));
+			$hours=floor($age/3600);
+			$minutes=floor($age/60);
+			$seconds=$age;
+			
+			if ($days>1)
+				$age=sprintf($lang['days ago'], $days);
+			elseif ($hours>0)
+				$age=sprintf((($hours>1)?$lang['hours ago']:$lang['hour ago']), $hours);
+			elseif ($minutes>0)
+				$age=sprintf((($minutes>1)?$lang['minutes ago']:$lang['minute ago']), $minutes);
+			else
+				$age=sprintf((($seconds>1)?$lang['secondes ago']:$lang['seconde ago']), $seconds);
+							
+			$search[$idx]['agefmt']=$age;
+											
+		}
+		
+		return $search;
 	}
 	
 }

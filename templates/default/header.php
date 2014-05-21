@@ -50,14 +50,14 @@
 			<li class="dropdown">
 				<a href="#" class="dropdown-toggle" data-toggle="dropdown">
 				<i class="icon-user icon-white"></i> 
-				<span class="hidden-phone">Anonymous</span>
+				<span class="hidden-phone"><?php echo $lang['Anonymous'] ?></span>
 				</a>
 				<ul class="dropdown-menu">
-					<li><a href="#"><i class="icon-user"></i> Profile</a></li>
-					<li><a href="#settings" data-toggle="modal"><i class="icon-cog"></i> Settings</a></li>
-					<li><a href="#mypastes" data-toggle="modal"><i class="icon-envelope"></i> My Pastes</a></li>
+					<li><a href="#"><i class="icon-user"></i> <?php echo $lang['Profile'] ?></a></li>
+					<li><a href="#settings" data-toggle="modal"><i class="icon-cog"></i> <?php echo $lang['Settings'] ?></a></li>
+					<li><a href="#mypastes" data-toggle="modal"><i class="icon-envelope"></i> <?php echo $lang['My Pastes'] ?></a></li>
 					<li class="divider"></li>
-					<li><a href="#"><i class="icon-off"></i> Logout</a></li>
+					<li><a href="#"><i class="icon-off"></i> <?php echo $lang['Logout'] ?></a></li>
 				</ul>
 			</li>
 			</ul>
@@ -69,41 +69,41 @@
 
 	<div class="modal-header">
 		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-		<h3 id="myModalLabel"><i class="icon-cog"></i> Settings</h3>
+		<h3 id="myModalLabel"><i class="icon-cog"></i> <?php echo $lang['Settings'] ?></h3>
 	</div>
 
 	<div class="modal-body">
 		<form class="form-horizontal">
 			<div class="control-group">
-				<label class="control-label" for="inputName"><i class="icon-user"></i> Name</label>
+				<label class="control-label" for="inputName"><i class="icon-user"></i> <?php echo $lang['Name'] ?></label>
 					<div class="controls">
-						<input type="text" id="inputName" placeholder="Name">
+						<input type="text" id="inputName" placeholder="<?php echo $lang['Name'] ?>">
 					</div>
 			</div>
 
 			<div class="control-group">
-				<label class="control-label" for="inputUsername"><i class="icon-user"></i> Username</label>
+				<label class="control-label" for="inputUsername"><i class="icon-user"></i> <?php echo $lang['Username'] ?></label>
 					<div class="controls">
-						<input type="text" id="inputUsername" placeholder="Username">
+						<input type="text" id="inputUsername" placeholder="<?php echo $lang['Username'] ?>">
 					</div>
 			</div>
 
 			<div class="control-group">
-				<label class="control-label" for="inputPassword"><i class="icon-key"></i> Password</label>
+				<label class="control-label" for="inputPassword"><i class="icon-key"></i> <?php echo $lang['Password'] ?></label>
 					<div class="controls">
-						<input type="password" id="inputPassword" placeholder="Password">
+						<input type="password" id="inputPassword" placeholder="<?php echo $lang['Password'] ?>">
 					</div>
 			</div>
 
 			<div class="control-group">
-				<label class="control-label" for="inputRepeat"><i class="icon-key"></i> Repeat Password</label>
+				<label class="control-label" for="inputRepeat"><i class="icon-key"></i> <?php echo $lang['Repeat Password'] ?></label>
 					<div class="controls">
-						<input type="password" id="inputRepeat" placeholder="Password">
+						<input type="password" id="inputRepeat" placeholder="<?php echo $lang['Password'] ?>">
 					</div>
 			</div>
 
 			<div class="control-group">
-				<label class="control-label" for="inputEmail"><i class="icon-envelope"></i> Email</label>
+				<label class="control-label" for="inputEmail"><i class="icon-envelope"></i> <?php echo $lang['Email'] ?></label>
 					<div class="controls">
 						<input type="text" id="inputEmail" placeholder="Email">
 					</div>
@@ -111,8 +111,8 @@
 	</div>
 
 			<div class="modal-footer">
-				<button class="btn btn-primary">Save changes</button>
-				<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+				<button class="btn btn-primary"><?php echo $lang['Save changes'] ?></button>
+				<button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo $lang['Close'] ?></button>
 		</form>
 			</div>
 
@@ -212,10 +212,10 @@
 	<div class="navbar navbar-inverse" id="nav">
 		<div class="navbar-inner">
 			<ul class="nav">
-				<li><a href="<?php echo $CONF['url'];?>"><i class="icon-paste"></i> Submit</a></li>
-				<li><?php if ( $mod_rewrite == true ) { echo '<a href="'. $CONF['url'] .'search">'; } else { echo '<a href="'. $CONF['url'] .'search.php">'; } ?><i class="icon-search"></i> Search</a></li>
-				<li><?php if ( $mod_rewrite == true ) { echo '<a href="'. $CONF['url'] .'trending">'; } else { echo '<a href="'. $CONF['url'] .'trends.php">'; } ?><i class="icon-bar-chart"></i> Trending</a></li>
-				<li><?php if ( $mod_rewrite == true ) { echo '<a href="'. $CONF['url'] .'archive">'; } else { echo '<a href="'. $CONF['url'] .'archive.php">'; } ?><i class="icon-archive"></i> Public Archive</a></li>
+				<li><a href="<?php echo $CONF['url'];?>"><i class="icon-paste"></i> <?php echo $lang['Submit'] ?></a></li>
+				<li><?php if ( $mod_rewrite == true ) { echo '<a href="'. $CONF['url'] .'search">'; } else { echo '<a href="'. $CONF['url'] .'search.php">'; } ?><i class="icon-search"></i> <?php echo $lang['Search'] ?></a></li>
+				<li><?php if ( $mod_rewrite == true ) { echo '<a href="'. $CONF['url'] .'trending">'; } else { echo '<a href="'. $CONF['url'] .'trends.php">'; } ?><i class="icon-bar-chart"></i> <?php echo $lang['Trending'] ?></a></li>
+				<li><?php if ( $mod_rewrite == true ) { echo '<a href="'. $CONF['url'] .'archive">'; } else { echo '<a href="'. $CONF['url'] .'archive.php">'; } ?><i class="icon-archive"></i> <?php echo $lang['Public Archive'] ?></a></li>
 				<!-- who knows what we'll add here, docs? faq?
 				<li class="dropdown">
 					<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-blah"></i> FAQ <b class="caret"></b></a>
@@ -229,8 +229,8 @@
 
 			</ul>
 			
-			<form class="navbar-search pull-right">
-				<input type="text" class="search-query typeahead" placeholder="Search">
+			<form class="navbar-search pull-right" method="get">
+				<input type="text" class="search-query typeahead" name="search" placeholder="Search">
 			</form>
 		</div>
 

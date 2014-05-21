@@ -34,6 +34,12 @@ $mod_rewrite=false;
 // What is the name of the template you want to use for the frontend (the folder name as displayed in /templates/)
 $CONF['template']='default';
 
+// Select your language. English and french are availables by default.
+$CONF['language']='french';
+
+// Select how many posts you want to be displayed on the right side of your website
+$CONF['recentposts']=10;
+
 // Enable reCAPTCHA to help prevent spambots?
 $CONF['useRecaptcha'] = false;
 // Get your keys at http://www.google.com/recaptcha

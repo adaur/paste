@@ -6,7 +6,7 @@ The original source is available from the previous owner's `GitHub repository <h
 
 A demo of Paste is available `here on SourceForge for your convenience <http://phpaste.sourceforge.net/demo>`_
 
-[adaur] I'm just playing with Paste a little bit... follow this if you want to see what it looks like...
+adaur: I'm just playing with Paste a little bit... follow this if you want to see what it looks like...
 ======================================================================
 
 

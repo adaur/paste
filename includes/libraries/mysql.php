@@ -14,57 +14,61 @@
 */
  
 // Database handler
-class DB
+class DB extends PDO
 {
-	var $dblink;
+	public $dblink;
 	var $dbresult;
 	// Constructor - establishes DB connection
-	function DB()
+	public function __construct()
 	{
 		global $CONF;
-		$this->dblink=mysql_pconnect(
-			$CONF["dbhost"],
-			$CONF["dbuser"],
-			$CONF["dbpass"])
-			or die("Unable to connect to the database. Have you installed PASTE?");
-	
-		mysql_select_db($CONF["dbname"], $this->dblink)
-			or die("Unable to select database {$GLOBALS[dbname]}");
+		try {
+			parent::__construct('mysql:host=' . $CONF["dbhost"] . ';dbname=' . $CONF["dbname"], $CONF["dbuser"], $CONF["dbpass"]);
+		} catch (PDOException $e) {
+			echo 'Connection failed: ' . $e->getMessage();
+		}
 	}
 	
     // How many pastes are in the database?
-    function getPasteCount()
+    public function getPasteCount()
     {
-    	$this->_query('select count(*) as cnt from paste');
-    	return $this->_next_record() ? $this->_f('cnt') : 0;
+    	return $this->query('select count(*) as cnt from paste')->fetchColumn(); 
     }
     
     // Delete oldest $deletecount pastes from the database.
-    function trimPastes($deletecount)
+    public function trimPastes($deletecount)
     {
     	// Build a one-shot statement to delete old pastes
 		$sql='delete from paste where pid in (';
 		$sep='';
-		$this->_query("select * from paste order by posted asc limit $deletecount");
+		$this->query("select * from paste order by posted asc limit $deletecount");
 		while ($this->_next_record())
 		{
 			$sql.=$sep.$this->_f('pid');
 			$sep=',';
 		}
 		$sql.=')';
-		
 		// Delete extra pastes.
-		$this->_query($sql);	
+		$this->exec($sql);	
     }
     
     // Delete all expired pastes.
-    function deleteExpiredPastes()
+    public function deleteExpiredPastes()
     {
-    	$this->_query("delete from paste where expires is not null and now() > expires");	
+    	$this->exec("DELETE FROM paste WHERE expires is not null and now() > expires");	
+    }
+	
+    // Add 1 hit
+    public function addHit($pid)
+    {
+    	$core = $this->prepare("UPDATE paste SET hits=hits+1 WHERE pid=:pid");	
+		$core->execute(array(
+			':pid' => $pid,
+		));
     }
     
     // Add paste and return ID.
-    function addPost($title,$format,$code,$parent_pid,$expiry_flag,$password)
+    public function addPost($title,$format,$code,$parent_pid,$expiry_flag,$password)
     {
     	//figure out expiry time
     	switch ($expiry_flag)
@@ -79,120 +83,103 @@ class DB
     			$expires="DATE_ADD(NOW(), INTERVAL 1 MONTH)";
     			break;	
     	}
-    	$this->_query('insert into paste (title, posted, format, code, parent_pid, expires, expiry_flag, password) '.
-				"values (?, now(), ?, ?, ?, $expires, ?, ?)",
-				$title,$format,$code,$parent_pid,$expiry_flag,$password);	
-		$id=$this->_get_insert_id();	
-		return $id;
+		$insert = $this->prepare(
+			'INSERT INTO paste (title, posted, format, code, parent_pid, expires, expiry_flag, password)
+			 VALUES (:title, NOW(), :format, :code, :parent_pid, '.$expires.', :expiry_flag, :password)'
+		);
+		$insert->execute(array(
+			':title' => $title,
+			':format' => $format,
+			':code' => $code,
+			':parent_pid' => $parent_pid,
+			':expiry_flag' => $expiry_flag,
+			':password' => $password
+		));
+		return $this->lastInsertId();
     }
     
     // Return entire paste row for given ID.
-    function getPaste($id)
+	public function getPaste($id)
     {
-      $this->_query('select *,date_format(posted, \'%M %a %D %l:%i %p\') as postdate '.'from paste where pid=?', $id);
-    	if ($this->_next_record())
-    		return $this->row;
-    	else
-    		return false;
+		$qid = $this->prepare('SELECT *, DATE_FORMAT(posted, \'%M %a %D %l:%i %p\') AS postdate FROM paste WHERE pid= :pid');
+		$qid->execute(array(
+			':pid' => $id
+		));
+		while( $row=$qid->fetch(PDO::FETCH_ASSOC) )
+    	if ($row)
+			return $row;
+		else
+			return false;
 		
+    }
+	
+    // Return search results - very basic search engine to be improved!
+    public function getSearch($keywords)
+    {
+    	$posts=array();
+		$qid = $this->prepare("SELECT pid,title,code,unix_timestamp()-unix_timestamp(posted) AS age, date_format(posted, '%a %D %b %H:%i') AS postdate FROM paste WHERE title LIKE :keywords OR code LIKE :keywords ORDER BY posted DESC, pid DESC");
+		$qid->execute(array(
+			':keywords' => '%' . $keywords . '%'
+		));
+		while( $row=$qid->fetch(PDO::FETCH_ASSOC) )
+			$posts[]=$row;
+    	if ($posts)
+			return $posts;
+		else
+			return false;
     }
     
     // Return summaries for $count posts ($count=0 means all)
-    function getRecentPostSummary($count)
+    public function getRecentPostSummary($count)
     {
     	$limit=$count?"limit $count":"";
     	
     	$posts=array();
-    	$this->_query("select pid,title,unix_timestamp()-unix_timestamp(posted) as age, ".
-			"date_format(posted, '%a %D %b %H:%i') as postdate ".
-			"from paste ".
-			"order by posted desc, pid desc $limit");
-		while ($this->_next_record())
-		{
-			$posts[]=$this->row;	
-		}
-		
-		return $posts;
+		$qid = $this->prepare("SELECT pid,title,unix_timestamp()-unix_timestamp(posted) as age, date_format(posted, '%a %D %b %H:%i') as postdate from paste order by posted desc, pid desc $limit");
+		$qid->execute(array());
+		while( $row=$qid->fetch(PDO::FETCH_ASSOC) )
+			$posts[]=$row;
+    	if ($posts)
+			return $posts;
+		else
+			return false;
     }
-    
+	
     // Get follow up posts for a particular post
-    function getFollowupPosts($pid, $limit=5)
+    public function getFollowupPosts($pid, $limit=5)
     {
-    	//any amendments?
-		$childposts=array();
-		$this->_query("select pid,title,".
-			"date_format(posted, '%a %D %b %H:%i') as postfmt ".
-			"from paste where parent_pid=? ".
-			"order by posted limit $limit", $pid);
-		while ($this->_next_record())
-		{
-			$childposts[]=$this->row;
-		}
-		return $childposts;	
+		$childposts = array();
+
+		$core = $this->prepare('SELECT pid, poster, DATE_FORMAT(posted, \'%a %D %b %H:%i\') AS postfmt FROM paste WHERE parent_pid= :p_pid ORDER BY posted LIMIT :lmt');
+		$core->execute(array(
+			':p_pid' => $pid,
+			':lmt' => $limit
+		));
+		while($row = $core->fetch(PDO::FETCH_ASSOC))
+			$childposts[]=$row;
+		return $childposts;
     }
 
     // Save formatted code for displaying.
-    function saveFormatting($pid, $codefmt, $codecss)
+    public function saveFormatting($pid, $codefmt, $codecss)
     {
-    	$this->_query("update paste set codefmt=?,codecss=? where pid=?",
-    		$codefmt, $codecss, $pid);
-	}
-     
-	// Execute query - should be regarded as private to insulate the rest ofthe application from sql differences.
-	function _query($sql)
-	{
-		// Been passed more parameters? do some smart replacement.
-		if (func_num_args() > 1)
-		{
-			// Query contains ? placeholders, but it's possible the
-			// replacement string have ? in too, so we replace them in
-			// our sql with something more unique
-			$q=md5(uniqid(rand(), true));
-			$sql=str_replace('?', $q, $sql);
-			
-			$args=func_get_args();
-			for ($i=1; $i<=count($args); $i++)
-			{
-                if(isset($args[$i])){
-                    $sql=preg_replace("/$q/", "'".preg_quote(mysql_real_escape_string($args[$i]))."'", $sql,1);
-                }
-				
-			}
-			// We shouldn't have any $q left, but it will help debugging if we change them back!
-			$sql=str_replace($q, '?', $sql);
-		}
-		
-		$this->dbresult=mysql_query($sql, $this->dblink);
-		if (!$this->dbresult)
-		{
-			die("Query failure: ".mysql_error()."<br />$sql");
-		}
-		return $this->dbresult;
-	}
-	
-	// get next record after executing _query.
-	function _next_record()
-	{
-		$this->row=mysql_fetch_array($this->dbresult);
-		return $this->row!=FALSE;
+		$core = $this->prepare('UPDATE paste SET codefmt= :fmt, codecss= :css WHERE pid= :pid');
+		$core->execute(array(
+			':fmt' => $codefmt,
+			':css' => $codecss,
+			':pid' => $pid
+		));
 	}
 	
 	// Get result column $field.
-	function _f($field)
+	public function _f($field)
     {
     	return $this->row[$field];
     }
- 
-	// Get the last insertion ID.
-	function _get_insert_id()
-	{
-		return mysql_insert_id($this->dblink);
-	}
 	
 	// Get last error.
-	function get_db_error()
+	public function get_db_error()
 	{
-		return mysql_last_error();
+		return $this->errorInfo();
     }
 }
-?>

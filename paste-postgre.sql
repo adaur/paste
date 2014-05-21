@@ -10,5 +10,6 @@ CREATE TABLE "paste" (
   "codecss" text,
   "expires" timestamp default NULL,
   "password" varchar(250) default NULL,
+  "hits" integer default '0',
   PRIMARY KEY  ("pid")
 )
