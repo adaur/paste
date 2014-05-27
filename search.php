@@ -36,13 +36,14 @@ $page['remember']='';
 // Add list of recent posts.
 $page['recent']=$pastebin->getRecentPosts($CONF['recentposts']);
 
+$page['title']=$lang['Search'].' - '.$CONF['sitetitle'];
+
 //  Research
 if (isset($_REQUEST["search"]))
 {
 	$keywords=$_REQUEST['search'];
 	// Get the search.
 	$page['search']=$pastebin->getSearch($keywords);
-	$page['title']=$lang['Search'].' - '.$CONF['sitetitle'];
 }
 
 // HTML page output.

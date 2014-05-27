@@ -1,22 +1,39 @@
-	<div class="span4">
-		<div class="top-bar"><h3><i class="icon-pencil"></i> <?php echo $lang['Trending'] ?></h3></div>
-			<div class="well no-padding" id="pagination-activity">
-				<div class="list-widget pagination-content">
-				<?php foreach($page['trends'] as $idx=>$entry) {
-					if (isset($pid) && $entry['pid']==$pid) $cls="background-color: #e0e0e0;";
-					else $cls="";?>
-				<div class="item" style="display: block; <?php echo $cls;?>">
-					<small class="pull-right"><?php echo $entry['agefmt'];?></small>
-					<p class="no-margin"><i class="icon-code"></i>
-					<?php if ( $mod_rewrite == true ) { 
-					echo '<a href="'. $CONF['url'] . $entry['pid'] . '">' . $entry['title'] . '</a>'; } else { 
-					echo '<a href="'. $CONF['url'] .'paste.php?paste='. $entry['pid'].'">' . $entry['title'] . '</a>'; } ?>
-					</p>
-				</div>
-			<?php } ?>
-			</div>
-		</div>
-	</div>
-<div class="row-fluid">
-<?php include('recent.php'); ?>
-</div> 
+
+<table id="trends" class="display" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Nom</th>
+                <th>Expiration</th>
+                <th>Synthaxe</th>
+                <th>Vues</th>
+                <th>Auteur</th>
+            </tr>
+        </thead>
+ 
+        <tbody>
+		<?php foreach($page['trends'] as $idx=>$entry) {
+		$expires = ((is_null($entry['expires'])) ? " (".$lang['Never Expires'].") " : (" - ".$lang['Expires on']." " . date("D, F jS @ g:ia", strtotime($entry['expires']))));
+		echo '<tr>';
+			echo '<td>'.$entry['agefmt'].'</td>';
+			if ( $mod_rewrite == true ) { 
+				echo '<td><a href="'. $CONF['url'] . $entry['pid'] . '">' . $entry['title'] . '</a></td>'; } else { 
+				echo '<td><a href="'. $CONF['url'] .'paste.php?paste='. $entry['pid'].'">' . $entry['title'] . '</a></td>'; }
+			echo '<td>'.$expires.'</td>';
+			echo '<td>'.$entry['format'].'</td>';
+			echo '<td>'.round($entry['hits']/2).'</td>';
+			echo '<td>'.$entry['agefmt'].'</td>';
+		echo '</tr>';
+			 } ?>
+
+        </tbody>
+    </table>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('#trends').dataTable( {
+            "language": {
+                "url": "includes/lang/<?php echo $CONF['language'] ?>_datatables.lang"
+            }
+        } );
+    } );
+</script>

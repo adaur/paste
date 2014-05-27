@@ -133,7 +133,7 @@ class DB extends PDO
     public function getTrends()
     {
     	$posts=array();
-		$qid = $this->prepare("SELECT pid,title,code,unix_timestamp()-unix_timestamp(posted) AS age, date_format(posted, '%a %D %b %H:%i') AS postdate FROM paste ORDER BY hits DESC LIMIT 10");
+		$qid = $this->prepare("SELECT pid,hits,format,expires,title,code,unix_timestamp()-unix_timestamp(posted) AS age, date_format(posted, '%a %D %b %H:%i') AS postdate FROM paste ORDER BY hits DESC LIMIT 10");
 		$qid->execute(array());
 		while( $row=$qid->fetch(PDO::FETCH_ASSOC) )
 			$posts[]=$row;

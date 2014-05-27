@@ -11,7 +11,6 @@
 	<script src="<?php echo $CONF['url'] . 'templates/' . $CONF['template']?>/js/jquery/jquery.hotkeys.js"></script>
 	<script src="<?php echo $CONF['url'] . 'templates/' . $CONF['template']?>/js/jquery/jquery-ui-1.10.2.custom.min.js"></script>
 	<script src="<?php echo $CONF['url'] . 'templates/' . $CONF['template']?>/js/jquery/jquery.pajinate.js"></script>
-	<script src="<?php echo $CONF['url'] . 'templates/' . $CONF['template']?>/js/jquery/jquery.dataTables.min.js"></script>
 	<script src="<?php echo $CONF['url'] . 'templates/' . $CONF['template']?>/js/bootstrap/bootstrap.min.js"></script>
 	<script src="<?php echo $CONF['url'] . 'templates/' . $CONF['template']?>/js/jquery/jquery.easing.min.js"></script>
 	<script src="<?php echo $CONF['url'] . 'templates/' . $CONF['template']?>/js/jquery/jquery.chosen.min.js"></script>

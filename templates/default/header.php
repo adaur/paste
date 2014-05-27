@@ -10,6 +10,7 @@
 	<link href="<?php echo $CONF['url'] . 'templates/' . $CONF['template']?>/css/paste.css" rel="stylesheet" type="text/css">
 	<style type="text/css"> body { padding-top: 100px; } </style>
 	<link href="<?php echo $CONF['url'] . 'templates/' . $CONF['template']?>/css/bootstrap-responsive.css" rel="stylesheet">
+	<link href="<?php echo $CONF['url'] . 'templates/' . $CONF['template']?>/css/jquery.dataTables.min.css" rel="stylesheet">
 	<?php
 	if (isset($page['post']['codecss'])) { 
 		echo '<style type="text/css">'."\n";
@@ -18,9 +19,10 @@
 	?>
 	
 	<!-- JS -->
-	<script src="<?php echo $CONF['url'] . 'templates/' . $CONF['template']?>/js/jquery/jquery-1.9.1-min.js"></script> 
+	<script src="<?php echo $CONF['url'] . 'templates/' . $CONF['template']?>/js/jquery/jquery-1.11.1.min.js"></script> 
 	<script src="<?php echo $CONF['url'] . 'templates/' . $CONF['template']?>/js/jquery/jquery.jpanelmenu.min.js"></script>
 	<script src="<?php echo $CONF['url'] . 'templates/' . $CONF['template']?>/js/jquery/jquery.cookie.js"></script>
+	<script src="<?php echo $CONF['url'] . 'templates/' . $CONF['template']?>/js/jquery/jquery.dataTables.min.js"></script>
 
 	<!-- IE6-8 support of HTML5 elements -->
 	<!--[if lt IE 9]>
