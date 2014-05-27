@@ -1,4 +1,5 @@
 	<!-- Recent Pastes -->
+<?php if(isset($page['recent']) && $page['recent'] !== false) { ?>
 	<div class="span4">
 		<div class="top-bar"><h3><i class="icon-pencil"></i> <?php echo $lang['Recent Pastes'] ?></h3></div>
 			<div class="well no-padding" id="pagination-activity">
@@ -18,3 +19,4 @@
 			</div>
 		</div>
 	</div>
+<?php } ?>
