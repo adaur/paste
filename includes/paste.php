@@ -106,8 +106,11 @@ class Pastebin
             return $id;
          }
       }
-      
+
 		// Validate some inputs.
+		/**
+		 * @todo $post['xxx'] fires notice
+		 */
 		$post["title"]=$this->_cleanUsername($post["title"]);
 		$post["format"]=$this->_cleanFormat($post["format"]);
 		$post["expiry"]=$this->_cleanExpiry($post["expiry"]);
@@ -244,30 +247,36 @@ class Pastebin
 		
 		// Get raw db info.
 		$posts=$this->db->getRecentPostSummary($list);
-		
-		// Augment with some formatting
-		foreach($posts as $idx=>$post)
-		{
-			$age=$post['age'];
-			$days=floor($age/(3600*24));
-			$hours=floor($age/3600);
-			$minutes=floor($age/60);
-			$seconds=$age;
+
+		//if there is any recent post (i.e first install)
+		if($posts) {
 			
-			if ($days>1)
-				$age=sprintf($lang['days ago'], $days);
-			elseif ($hours>0)
-				$age=sprintf((($hours>1)?$lang['hours ago']:$lang['hour ago']), $hours);
-			elseif ($minutes>0)
-				$age=sprintf((($minutes>1)?$lang['minutes ago']:$lang['minute ago']), $minutes);
-			else
-				$age=sprintf((($seconds>1)?$lang['secondes ago']:$lang['seconde ago']), $seconds);
-							
-			$posts[$idx]['agefmt']=$age;
-											
+			// Augment with some formatting
+			foreach($posts as $idx=>$post)
+			{
+				$age=$post['age'];
+				$days=floor($age/(3600*24));
+				$hours=floor($age/3600);
+				$minutes=floor($age/60);
+				$seconds=$age;
+				
+				if ($days>1)
+					$age=sprintf($lang['days ago'], $days);
+				elseif ($hours>0)
+					$age=sprintf((($hours>1)?$lang['hours ago']:$lang['hour ago']), $hours);
+				elseif ($minutes>0)
+					$age=sprintf((($minutes>1)?$lang['minutes ago']:$lang['minute ago']), $minutes);
+				else
+					$age=sprintf((($seconds>1)?$lang['secondes ago']:$lang['seconde ago']), $seconds);
+								
+				$posts[$idx]['agefmt']=$age;
+												
+			}
+			
+			return $posts;		
+		} else {
+			return null;
 		}
-		
-		return $posts;		
 	}
 
 	// Get formatted post, ready for inserting into a page. Returns an array of useful information
@@ -280,8 +289,8 @@ class Pastebin
 		if ($post)
 		{
 			// Show a quick reference url, title and parents.        
-			$expires = ((is_null($post['expires'])) ? " (".$lang['Never Expires'].") " : (" - ".$lang['Expires on']." " . date("D, F jS @ g:ia", strtotime($post['expires']))));
-			$post['posttitle']="<b>".htmlspecialchars($post['title'])."</b> - ".$lang['Posted on']." {$post['postdate']} {$expires}";
+			$post['expires'] = ((is_null($post['expires'])) ? " (".$lang['Never Expires'].") " : (" - ".$lang['Expires on']." " . date("D, F jS @ g:ia", strtotime($post['expires']))));
+			$post['posttitle']= htmlspecialchars($post['title']);
 			
 			if ($post['parent_pid']>0)
 			{
@@ -334,7 +343,7 @@ class Pastebin
 			}
 				
 			// Get formatted version of code
-			if (strlen($post['codefmt'])==0)
+			if (strlen($post['codefmt'])==0 && $this->conf['geshi_enabled'])
 			{
 				$geshi = new GeSHi($post['editcode'], $post['format']);
 				

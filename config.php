@@ -62,6 +62,8 @@ $CONF['default_expiry']='f';
 // The maximum number of posts you want to keep. Keep this as-is if you want no limits.
 $CONF['max_posts']=0;
 
+$CONF['geshi_enabled'] = true;
+
 // Default syntax highlight for pastes.
 $CONF['default_highlighter']='text';
 
