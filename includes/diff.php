@@ -1,37 +1,37 @@
 <?php
 
 /**
-	Diff implemented in pure php, written from scratch.
-	Copyright (C) 2003  Daniel Unterberger <diff.phpnet@holomind.de>
-
-	This program is free software; you can redistribute it and/or
-	modify it under the terms of the GNU General Public License
-	as published by the Free Software Foundation; either version 3
-	of the License, or (at your option) any later version.
-
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
-
-	http://www.gnu.org/licenses/gpl.html
-
-	About:
-	I searched a function to compare arrays and the array_diff()
-	was not specific enough. It ignores the order of the array-values.
-	So I reimplemented the diff-function which is found on unix-systems
-	but this you can use directly in your code and adopt for your needs.
-	Simply adopt the $this->formatline-function. with the third-parameter of arr_diff()
-	you can hide matching lines. Hope someone has use for this.
-
-	http://www.holomind.de/phpnet/diff.src.php
-
-	Contact: d.u.diff@holomind.de <daniel unterberger>
-
-
-	Modified by Paul Dixon (paul@elphin.com) to provide class-based 
-	interface for http://pastebin.com diff feature
-
+*	Diff implemented in pure php, written from scratch.
+*	Copyright (C) 2003  Daniel Unterberger <diff.phpnet@holomind.de>
+*
+*	This program is free software; you can redistribute it and/or
+*	modify it under the terms of the GNU General Public License
+*	as published by the Free Software Foundation; either version 3
+*	of the License, or (at your option) any later version.
+*
+*	This program is distributed in the hope that it will be useful,
+*	but WITHOUT ANY WARRANTY; without even the implied warranty of
+*	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+*	GNU General Public License for more details.
+*
+*	http://www.gnu.org/licenses/gpl.html
+*
+*	About:
+*	I searched a function to compare arrays and the array_diff()
+*	was not specific enough. It ignores the order of the array-values.
+*	So I reimplemented the diff-function which is found on unix-systems
+*	but this you can use directly in your code and adopt for your needs.
+*	Simply adopt the $this->formatline-function. with the third-parameter of arr_diff()
+*	you can hide matching lines. Hope someone has use for this.
+*
+*	http://www.holomind.de/phpnet/diff.src.php
+*
+*	Contact: d.u.diff@holomind.de <daniel unterberger>
+*
+*
+*	Modified by Paul Dixon (paul@elphin.com) to provide class-based 
+*	interface for http://pastebin.com diff feature
+*
 **/
 
 class Diff
